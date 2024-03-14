@@ -1,16 +1,47 @@
-import MySQLdb as mdb
+import mysql.connector as mdb
 import util
 
 
-def create_table(connection, cursor, query, table_name):
+def create_table(cursor, query, table_name):
     try:
         cursor.execute(query)
-    except connection.Error as err:
+    except mdb.Error as err:
         print(f"Error while creating table '{table_name}':")
         print(err)
         return False
     return True
+
+def create_full_text_index(cursor, table_name, column_name):
+    try:
+        cursor.execute(f"ALTER TABLE {table_name} ADD FULLTEXT({column_name})")
+    except mdb.Error as err:
+        print(f"Error while creating full-text index on '{table_name}.{column_name}':")
+        print(err)
+        return False
+    return True
+
+
+def create_full_text_indexes():
+    full_index_table_column_list = [("movie","description"), ("person","full_name")]
     
+    con = mdb.connect(host=util.HOSTNAME, port=util.PORT, database=util.DATABASE, user=util.USERNAME, password=util.PASSWORD)
+    cur = con.cursor()
+
+    check_full_text_indexes = True
+    for table_name, column_name in full_index_table_column_list:
+        check_full_text_indexes = create_full_text_index(cur, table_name, column_name)
+        if not check_full_text_indexes:
+            con.rollback()
+            print("An error occurred during full-text index creation - rollback.")
+            break
+    if check_full_text_indexes:
+        con.commit()
+        print("Full-text indexes created successfully.")
+    cur.close()
+    con.close()
+    return check_full_text_indexes
+
+
 def create_tables():
     table_name_list = ["movie","person","genre","role","movie_genre","movie_role"]
     query_dict = {
@@ -58,17 +89,29 @@ def create_tables():
     con = mdb.connect(host=util.HOSTNAME, port=util.PORT, database=util.DATABASE, user=util.USERNAME, password=util.PASSWORD)
     cur = con.cursor()
     
+    check_tables = True
     for table_name in table_name_list:
-        check = create_table(con, cur, query_dict[table_name], table_name)
-        if not check:
+        check_tables = create_table(cur, query_dict[table_name], table_name)
+        if not check_tables:
             con.rollback()
             print("An error occurred during table creation - rollback.")
             break
-    if check:
+    if check_tables:
         con.commit()
         print("Tables created successfully.")
     cur.close()
     con.close()
+    return check_tables
+
+def create_db():
+    error_check = create_tables()
+    if error_check:
+        error_check = create_full_text_indexes()
+           
+    if not error_check:
+        print("Aborting DB creation.") 
+    else:
+        print("DB creation successful.") 
 
 if __name__ == '__main__':
-    create_tables()
+    create_db()

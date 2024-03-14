@@ -1,4 +1,4 @@
-import MySQLdb as mdb
+import mysql.connector as mdb
 import pandas as pd
 import util
 import datetime

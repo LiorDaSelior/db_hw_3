@@ -155,3 +155,77 @@ def query_3(role, starting_release_year):
     finally:
         cur.close()
         con.close()
+        
+
+def query_4(search_string):
+    """
+    Retrieves people with a specific string in their full name.
+
+    :param: search_string: Desired string which is included in the person's full name.
+    :return: None
+    """
+    con = mdb.connect(host=util.HOSTNAME, port=util.PORT, database=util.DATABASE, user=util.USERNAME,
+                      password=util.PASSWORD)
+    cur = con.cursor()
+    try:
+        cur.execute("""
+            SELECT person.full_name FROM person 
+            WHERE MATCH(person.full_name)
+            AGAINST(%s IN NATURAL LANGUAGE MODE)
+        """, (search_string,))
+
+        results = cur.fetchall()
+        if len(results) > 0:
+            print(f"Full name")
+            print("-------------------------")
+            for row in results:
+                print(f"{row[0]}")
+        else:
+            print("No results, please check your input.")
+    except mdb.Error as e:
+        print("Error:", e)
+    finally:
+        cur.close()
+        con.close()
+        
+def query_5(target_string1, target_string2, target_string3):
+    """
+    Retrieves movies which have specific strings (up to 3 strings) in their description (AND logic).
+
+    :param: target_string1: Desired string which is included in the movie's description.
+    :param: target_string2: Additional desired string in the movie's description (if not needed, add the same string as target_string1).
+    :param: target_string3: Additional desired string in the movie's description (if not needed, add the same string as target_string1 or target_string2).
+    :return: None
+    """
+    con = mdb.connect(host=util.HOSTNAME, port=util.PORT, database=util.DATABASE, user=util.USERNAME,
+                      password=util.PASSWORD)
+    cur = con.cursor()
+    try:
+        cur.execute("""
+            SELECT movie.title, movie.description FROM movie 
+            WHERE 
+            MATCH(movie.description) AGAINST(%s IN NATURAL LANGUAGE MODE) AND
+            MATCH(movie.description) AGAINST(%s IN NATURAL LANGUAGE MODE) AND
+            MATCH(movie.description) AGAINST(%s IN NATURAL LANGUAGE MODE)
+        """, (target_string1, target_string2, target_string3))
+
+        results = cur.fetchall()
+        if len(results) > 0:
+            print(f"Movie title   |   Movie description relevant snippets")
+            print("---------------------------" * 2)
+            for row in results:
+                print(f"{row[0]} |   ...{' ... '.join(util.snip_desc(row[1], target_string1, target_string2, target_string3))}...")
+        else:
+            print("No results, please check your input.")
+    except mdb.Error as e:
+        print("Error:", e)
+    finally:
+        cur.close()
+        con.close()
+        
+if __name__ == "__main__":
+    query_4("johnson")
+    print("***")
+    query_5("love", "woman", "gun")
+    print("***")
+    query_5("action", "bomb", "mafia")
