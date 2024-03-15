@@ -169,17 +169,18 @@ def query_4(search_string):
     cur = con.cursor()
     try:
         cur.execute("""
-            SELECT person.full_name FROM person 
+            SELECT person.full_name, person.birth_date FROM person 
             WHERE MATCH(person.full_name)
             AGAINST(%s IN NATURAL LANGUAGE MODE)
+            ORDER BY person.full_name ASC
         """, (search_string,))
 
         results = cur.fetchall()
         if len(results) > 0:
-            print(f"Full name")
+            print(f"Full name | Birth Date")
             print("-------------------------")
             for row in results:
-                print(f"{row[0]}")
+                print(f"{row[0]} | {row[1]}")
         else:
             print("No results, please check your input.")
     except mdb.Error as e:
@@ -202,19 +203,74 @@ def query_5(target_string1, target_string2, target_string3):
     cur = con.cursor()
     try:
         cur.execute("""
-            SELECT movie.title, movie.description FROM movie 
+            SELECT movie.title, movie.description, movie.rating FROM movie 
             WHERE 
             MATCH(movie.description) AGAINST(%s IN NATURAL LANGUAGE MODE) AND
             MATCH(movie.description) AGAINST(%s IN NATURAL LANGUAGE MODE) AND
             MATCH(movie.description) AGAINST(%s IN NATURAL LANGUAGE MODE)
+            ORDER BY movie.rating DESC
         """, (target_string1, target_string2, target_string3))
 
         results = cur.fetchall()
         if len(results) > 0:
-            print(f"Movie title   |   Movie description relevant snippets")
+            print(f"Movie title   |  Rating |  Movie description relevant snippets")
             print("---------------------------" * 2)
             for row in results:
-                print(f"{row[0]} |   ...{' ... '.join(util.snip_desc(row[1], target_string1, target_string2, target_string3))}...")
+                print(f"{row[0]} | {row[2]} | ...{' ... '.join(util.snip_desc(row[1], target_string1, target_string2, target_string3))}...")
+        else:
+            print("No results, please check your input.")
+    except mdb.Error as e:
+        print("Error:", e)
+    finally:
+        cur.close()
+        con.close()
+        
+def query_6():
+    """
+    Retrieves all roles.
+
+    :return: None
+    """
+    con = mdb.connect(host=util.HOSTNAME, port=util.PORT, database=util.DATABASE, user=util.USERNAME,
+                      password=util.PASSWORD)
+    cur = con.cursor()
+    try:
+        cur.execute("""
+            SELECT role.title FROM role 
+            ORDER BY role.title ASC""")
+        results = cur.fetchall()
+        if len(results) > 0:
+            print(f"Role")
+            print("-----------")
+            for row in results:
+                print(f"{row[0]}")
+        else:
+            print("No results, please check your input.")
+    except mdb.Error as e:
+        print("Error:", e)
+    finally:
+        cur.close()
+        con.close()
+        
+def query_7():
+    """
+    Retrieves all genres.
+
+    :return: None
+    """
+    con = mdb.connect(host=util.HOSTNAME, port=util.PORT, database=util.DATABASE, user=util.USERNAME,
+                      password=util.PASSWORD)
+    cur = con.cursor()
+    try:
+        cur.execute("""
+            SELECT genre.title FROM genre 
+            ORDER BY genre.title ASC""")
+        results = cur.fetchall()
+        if len(results) > 0:
+            print(f"Genre")
+            print("-----------")
+            for row in results:
+                print(f"{row[0]}")
         else:
             print("No results, please check your input.")
     except mdb.Error as e:
@@ -224,8 +280,8 @@ def query_5(target_string1, target_string2, target_string3):
         con.close()
         
 if __name__ == "__main__":
-    query_4("johnson")
-    print("***")
-    query_5("love", "woman", "gun")
-    print("***")
-    query_5("action", "bomb", "mafia")
+    #query_5("love", "fire", "fire")
+    #query_4("johnson")
+    query_6()
+    query_7()
+    pass
