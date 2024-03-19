@@ -3,7 +3,7 @@ import util
 
 def query_1(role, genre):
     """
-    Return a list of persons who had a better average rating in a specific genre while performing the given role.
+    Return a list of persons who had a better than average rating in a specific genre while performing the given role.
     If role or genre titles are not present in the DB an appropriate message is printed.
 
     :param role: Desired role performed by the person, such as 'Actor' or 'Director' .
@@ -34,7 +34,7 @@ def query_1(role, genre):
             WHERE 
                 r.title = %s AND g.title = %s
             GROUP BY 
-                p.full_name
+                p.id, p.full_name
             HAVING 
                 AVG(m.rating) > (
                     SELECT 
@@ -282,6 +282,5 @@ def query_7():
 if __name__ == "__main__":
     #query_5("love", "fire", "fire")
     #query_4("johnson")
-    query_6()
-    query_7()
+    query_1("Director", "Action")
     pass

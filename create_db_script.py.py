@@ -20,6 +20,35 @@ def create_full_text_index(cursor, table_name, column_name):
         return False
     return True
 
+def create_index(cursor, table_name, column_name):
+    try:
+        cursor.execute(f"CREATE INDEX {column_name}_index ON {table_name} ({column_name})")
+    except mdb.Error as err:
+        print(f"Error while creating index on '{table_name}.{column_name}':")
+        print(err)
+        return False
+    return True
+
+def create_indexes():
+    full_index_table_column_list = [("movie","release_date"), ("movie","rating")]
+    
+    con = mdb.connect(host=util.HOSTNAME, port=util.PORT, database=util.DATABASE, user=util.USERNAME, password=util.PASSWORD)
+    cur = con.cursor()
+
+    check_indexes = True
+    for table_name, column_name in full_index_table_column_list:
+        check_indexes = create_index(cur, table_name, column_name)
+        if not check_indexes:
+            con.rollback()
+            print("An error occurred during index creation - rollback.")
+            break
+    if check_indexes:
+        con.commit()
+        print("Indexes created successfully.")
+    cur.close()
+    con.close()
+    return check_indexes
+
 
 def create_full_text_indexes():
     full_index_table_column_list = [("movie","description"), ("person","full_name")]
@@ -41,7 +70,6 @@ def create_full_text_indexes():
     con.close()
     return check_full_text_indexes
 
-
 def create_tables():
     table_name_list = ["movie","person","genre","role","movie_genre","movie_role"]
     query_dict = {
@@ -55,7 +83,7 @@ def create_tables():
             production_budget INT,
             marketing_budget INT,
             revenue INT
-            )""",
+            );""",
         "person" : """CREATE TABLE IF NOT EXISTS person 
             (id INT AUTO_INCREMENT PRIMARY KEY,
             full_name VARCHAR(256) NOT NULL,
@@ -104,14 +132,15 @@ def create_tables():
     return check_tables
 
 def create_db():
-    error_check = create_tables()
-    if error_check:
-        error_check = create_full_text_indexes()
-           
-    if not error_check:
-        print("Aborting DB creation.") 
-    else:
+    no_error_check = create_tables()
+    if no_error_check:
+        no_error_check = create_indexes()
+    if no_error_check:
+        no_error_check = create_full_text_indexes()
+    if no_error_check:
         print("DB creation successful.") 
+    else:
+        print("Aborting DB creation.") 
 
 if __name__ == '__main__':
     create_db()
