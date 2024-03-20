@@ -84,11 +84,11 @@ if __name__ == '__main__':
     cur = con.cursor()
     
     movie_df = pd.read_csv("movie_data.csv")
-    person_df = pd.read_csv("person_data_pruned.csv")
+    person_df = pd.read_csv("person_data.csv")
     genre_df = pd.read_csv("genre_data.csv")
     role_df = pd.read_csv("category_data.csv")
     movie_genre_df = pd.read_csv("genre_movie_data.csv")
-    movie_role_df = pd.read_csv("movie_person_data_pruned.csv")
+    movie_role_df = pd.read_csv("movie_person_data.csv")
     arr = [(fill_movie_table, movie_df),
            (fill_person_table, person_df),
            (fill_genre_table, genre_df),
