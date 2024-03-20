@@ -82,11 +82,11 @@ def query_2(starting_release_year):
                 g.title,
                 SUM(m.revenue) AS Total_Revenue
             FROM 
-                try.genre AS g
+                genre AS g
             JOIN 
-                try.movie_genre AS mg ON g.id = mg.genre_id
+                movie_genre AS mg ON g.id = mg.genre_id
             JOIN 
-                try.movie AS m ON mg.movie_id = m.id
+                movie AS m ON mg.movie_id = m.id
             WHERE 
                 YEAR(m.release_date) >= %s
             GROUP BY 
