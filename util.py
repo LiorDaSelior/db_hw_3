@@ -1,8 +1,8 @@
-USERNAME = 'root'
-PASSWORD = '1234'
+USERNAME = 'liorbelenkov'
+PASSWORD = 'liorbelen59936'
 HOSTNAME = 'localhost'
-DATABASE = 'try'
-PORT = 3306
+DATABASE = 'liorbelenkov'
+PORT = 3305
 
 add_movie = ("""INSERT INTO movie
              (id, title, release_date, runtime, description, rating, production_budget, marketing_budget, revenue)
