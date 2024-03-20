@@ -53,10 +53,10 @@ def query_1(role, genre):
 
         results = cur.fetchall()
         if len(results) > 0:
-            print(f"Full name   |   Average rating in {genre} genre as {role}")
-            print("-------------------------" * 2)
+            print(f"Full name{'':<31} |   Average rating in {genre} genre as {role}")
+            print("-------------------------" * 3)
             for row in results:
-                print(f"{row[0]:<10} |   {row[1]:.1f}")
+                print(f"{row[0]:<40} |   {row[1]:.1f}")
         else:
             print("No results, please check your input.")
     except mdb.Error as e:
@@ -97,10 +97,10 @@ def query_2(starting_release_year):
 
         results = cur.fetchall()
         if len(results) > 0:
-            print(f"Genre   |   Total Revenue since {starting_release_year} (in hundreds of $)")
-            print("-------------------------" * 2)
+            print(f"Genre{'':<5} |   Total Revenue since {starting_release_year} (in hundreds of $)")
+            print("-------------------------" * 3)
             for row in results:
-                print(f"{row[0]:<10} |   ${row[1]}")
+                print(f"{row[0]:<10} |   {row[1]}")
         else:
             print("No results, please check your input.")
     except mdb.Error as e:
@@ -144,10 +144,10 @@ def query_3(role, starting_release_year):
 
         results = cur.fetchall()
         if len(results) > 0:
-            print(f"Full name   |   Movie count as {role} since {starting_release_year}")
-            print("-------------------------" * 2)
+            print(f"Full name{'':<21} |   Movie count as {role} since {starting_release_year}")
+            print("-------------------------" * 3)
             for row in results:
-                print(f"{row[0]:<10} |   {row[1]}")
+                print(f"{row[0]:<30} |   {row[1]}")
         else:
             print("No results, please check your input.")
     except mdb.Error as e:
@@ -177,10 +177,10 @@ def query_4(search_string):
 
         results = cur.fetchall()
         if len(results) > 0:
-            print(f"Full name | Birth Date")
-            print("-------------------------")
+            print(f"Full name{'':<21} |   Birth Date")
+            print("-------------------------" * 2)
             for row in results:
-                print(f"{row[0]} | {row[1]}")
+                print(f"{row[0]:<30} |   {row[1]}")
         else:
             print("No results, please check your input.")
     except mdb.Error as e:
@@ -213,10 +213,10 @@ def query_5(target_string1, target_string2, target_string3):
 
         results = cur.fetchall()
         if len(results) > 0:
-            print(f"Movie title   |  Rating |  Movie description relevant snippets")
-            print("---------------------------" * 3)
+            print(f"Movie title{'':<29} | Rating |    Movie description relevant snippets")
+            print("---------------------------" * 4)
             for row in results:
-                print(f"{row[0]} | {row[2]} | ...{' ... '.join(util.snip_desc(row[1], target_string1, target_string2, target_string3))}...")
+                print(f"{row[0]:<40} | {row[2]:<6} |   ...{' ... '.join(util.snip_desc(row[1], target_string1, target_string2, target_string3))}...")
         else:
             print("No results, please check your input.")
     except mdb.Error as e:
@@ -278,14 +278,3 @@ def query_7():
     finally:
         cur.close()
         con.close()
-        
-if __name__ == "__main__":
-    query_1("Director", "Action")
-    print("***")
-    query_2(2015)
-    print("***")
-    query_3("Actor", 2018)
-    print("***")
-    query_4("johnson")
-    print("***")
-    query_5("mafia", "car", "action")
