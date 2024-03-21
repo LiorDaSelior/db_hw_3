@@ -83,18 +83,18 @@ if __name__ == '__main__':
     con = mdb.connect(host=util.HOSTNAME, port=util.PORT, database=util.DATABASE, user=util.USERNAME, password=util.PASSWORD)
     cur = con.cursor()
     
-    movie_df = pd.read_csv("data/movie_data.csv")
-    person_df = pd.read_csv("data/person_data.csv")
-    genre_df = pd.read_csv("data/genre_data.csv")
-    role_df = pd.read_csv("data/category_data.csv")
-    movie_genre_df = pd.read_csv("data/genre_movie_data.csv")
-    movie_role_df = pd.read_csv("data/movie_person_data.csv")
+    movie_df = pd.read_csv("src/data/movie_data.csv")
+    person_df = pd.read_csv("src/data/person_data.csv")
+    genre_df = pd.read_csv("src/data/genre_data.csv")
+    role_df = pd.read_csv("src/data/category_data.csv")
+    movie_genre_df = pd.read_csv("src/data/genre_movie_data.csv")
+    movie_role_df = pd.read_csv("src/data/movie_person_data.csv")
     arr = [(fill_movie_table, movie_df),
-           (fill_person_table, person_df),
-           (fill_genre_table, genre_df),
-           (fill_role_table, role_df),
-           (fill_movie_genre_table, movie_genre_df),
-           (fill_movie_role_table, movie_role_df)]
+        (fill_person_table, person_df),
+        (fill_genre_table, genre_df),
+        (fill_role_table, role_df),
+        (fill_movie_genre_table, movie_genre_df),
+        (fill_movie_role_table, movie_role_df)]
     
     for f, df in arr:
         check = f(cur, df)
