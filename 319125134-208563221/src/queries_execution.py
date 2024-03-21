@@ -9,4 +9,4 @@ if __name__ == "__main__":
     print("\n***\n")
     query_4("johnson")
     print("\n***\n")
-    query_5("mafia", "car", "action")
+    query_5("mafia", "mafia", "mafia")
